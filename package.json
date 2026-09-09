@@ -4,13 +4,13 @@
   "description": "Autonomous PDF analytics & vector search pipeline — enterprise RAG platform with citation-grounded answers, AI digests, hybrid search and OCR.",
   "license": "MIT",
   "private": true,
-  "homepage": "https://github.com/YOUR_USERNAME/insightdoc#readme",
+  "homepage": "https://github.com/razikuljoni/insightdoc#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/YOUR_USERNAME/insightdoc.git"
+    "url": "git+https://github.com/razikuljoni/insightdoc.git"
   },
   "bugs": {
-    "url": "https://github.com/YOUR_USERNAME/insightdoc/issues"
+    "url": "https://github.com/razikuljoni/insightdoc/issues"
   },
   "keywords": [
     "rag",
