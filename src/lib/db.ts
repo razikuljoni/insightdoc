@@ -1,11 +1,15 @@
 import { PrismaClient } from '@prisma/client';
 
-const dbUrl =
+let dbUrl =
   process.env.DATABASE_URL ||
   process.env.POSTGRES_PRISMA_URL ||
   process.env.POSTGRES_URL;
 
-if (dbUrl && !process.env.DATABASE_URL) {
+if (dbUrl && dbUrl.startsWith('file:')) {
+  dbUrl = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL;
+}
+
+if (dbUrl) {
   process.env.DATABASE_URL = dbUrl;
 }
 
