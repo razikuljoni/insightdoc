@@ -44,3 +44,6 @@ bun.lock
 
 # Code Graph / Local Tooling caches
 .codegraph/
+.vercel
+.env*
+*.tsbuildinfo
