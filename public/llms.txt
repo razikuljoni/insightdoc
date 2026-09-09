@@ -1,0 +1,28 @@
+# InsightDoc
+
+> InsightDoc is an open-source, autonomous PDF analytics and vector search pipeline — an enterprise-grade RAG (retrieval-augmented generation) platform. It ingests dense PDFs into a chunked vector index and answers questions about them with streamed, citation-grounded responses, each linked to the exact source page.
+
+InsightDoc is MIT-licensed, self-hostable, and deploys to Vercel in minutes. It is built with Next.js (App Router), TypeScript, Prisma, Tailwind CSS and shadcn/ui.
+
+## What it does
+
+- **PDF ingestion pipeline**: upload → checksum de-duplication → text extraction → structure-aware chunking → embedding → searchable index. Progress is observable end-to-end (queued → extracting → chunking → embedding → ready).
+- **Hybrid search**: semantic vector retrieval fused with keyword scoring using Reciprocal Rank Fusion (RRF) and score-weighted reranking.
+- **Grounded answers**: streamed chat responses where every claim carries inline citations that deep-link to the exact page of the source PDF, shown side-by-side with an in-app PDF viewer.
+- **AI digests**: per-document executive summaries with key points and entities, shareable into chats, comparable side-by-side across documents with shared-entity highlighting.
+- **OCR fallback**: scanned documents without a text layer are routed through tesseract.js with live per-page progress.
+- **Analytics**: token and cost tracking, latency percentiles, ingest throughput, search quality signals (feedback + review queue).
+- **Voice**: speech-to-text input and text-to-speech output for hands-free operation.
+- **Prompt library**: reusable, parameterized prompts for common document tasks.
+
+## Intended use
+
+Engineers, analysts, researchers and teams who need to interrogate large or dense PDF corpora (contracts, papers, reports, manuals) and require trustworthy, verifiable answers rather than opaque generation.
+
+## Technical summary
+
+- Single-page Next.js App Router application with a REST API under `/api/v1` (workspaces, documents, chunks, search, chats with SSE streaming, summaries, analytics, audio).
+- Prisma ORM over SQLite by default (zero-config start); schema is portable to PostgreSQL for production scale.
+- Embeddings are provided by a swappable `EmbeddingService` (deterministic local hashed embedder by default, 1536-dim).
+- Background document processing via an in-process resilient job queue with retry/backoff.
+- MIT licensed. Source, setup and deployment guides live in the project repository (see README.md, docs/DEPLOYMENT.md, docs/ARCHITECTURE.md).

@@ -1,0 +1,33 @@
+services:
+  app:
+    build: .
+    container_name: insightdoc
+    ports:
+      - "3000:3000"
+    environment:
+      # SQLite on the mounted volume — full persistence out of the box.
+      - DATABASE_URL=file:/app/db/custom.db
+      # Set the public origin so SEO/OG metadata resolves to your host:
+      # - NEXT_PUBLIC_SITE_URL=https://insightdoc.example.com
+      # AI provider (set BOTH for serverless-style env config; alternatively
+      # mount a .z-ai-config file at /app/.z-ai-config):
+      # - ZAI_API_KEY=your-key
+      # - ZAI_BASE_URL=https://api.z.ai/api/paas/v4
+      # Pipeline tuning (optional):
+      # - INSIGHTDOC_OCR=1
+      # - INSIGHTDOC_OCR_MAX_PAGES=12
+    volumes:
+      - insightdoc-db:/app/db
+      - insightdoc-storage:/app/storage
+      # - ./.z-ai-config:/app/.z-ai-config:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  insightdoc-db:
+  insightdoc-storage:

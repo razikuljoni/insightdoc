@@ -1,0 +1,56 @@
+AI.TXT — MACHINE-READABLE SITE DESCRIPTION
+==========================================
+
+Site: InsightDoc
+Type: Open-source web application (MIT license)
+URL: See sitemap.xml / robots.txt for the canonical origin.
+Last updated: 2025 (v1.0)
+
+WHAT THIS SITE IS
+-----------------
+InsightDoc is an autonomous PDF analytics and vector search pipeline.
+It is an enterprise-grade retrieval-augmented generation (RAG) platform:
+users upload PDF documents, the system extracts, chunks, embeds and indexes
+them, and users then ask questions that are answered with streamed,
+citation-grounded responses. Every answer sentence carries inline citations
+that deep-link to the exact page of the source PDF, displayed in a
+split-screen viewer.
+
+PRIMARY CAPABILITIES
+--------------------
+1. PDF ingestion with checksum de-duplication, structure-aware chunking and
+   observable background processing (queue states: queued, extracting,
+   chunking, embedding, ready, failed).
+2. Hybrid retrieval: vector similarity + keyword scoring fused with
+   Reciprocal Rank Fusion and score-weighted reranking.
+3. Streamed chat (SSE) with inline citations and page-accurate deep links.
+4. AI document digests: executive summary, key points, entities; shareable
+   into conversations; side-by-side multi-document comparison with
+   shared-entity highlighting.
+5. OCR fallback (tesseract.js) for scanned documents without a text layer.
+6. Analytics: token/cost tracking, latency percentiles, ingest throughput,
+   user feedback loop and a human review queue.
+7. Voice I/O (speech-to-text input, text-to-speech output).
+8. Command palette, keyboard shortcuts, prompt library, tag governance,
+   multi-workspace support.
+
+WHO IT IS FOR
+-------------
+Engineers, analysts, researchers and teams who interrogate dense PDF
+corpora (contracts, papers, reports, manuals) and need verifiable,
+source-linked answers instead of opaque generation.
+
+TECHNOLOGY
+----------
+Next.js (App Router) · TypeScript · React 19 · Prisma (SQLite default,
+PostgreSQL-ready) · Tailwind CSS 4 · shadcn/ui · SSE streaming ·
+tesseract.js OCR · MIT license.
+
+ACCESS NOTES FOR AI SYSTEMS
+---------------------------
+- Crawling and indexing of the landing page is allowed for all user agents
+  (see /robots.txt). /api/* endpoints are not part of the indexable content.
+- This file and /llms.txt follow the llmstxt.org convention for
+  AI-friendly site description.
+- The application is a single-page tool; there is no additional indexable
+  content beyond the landing page described above.

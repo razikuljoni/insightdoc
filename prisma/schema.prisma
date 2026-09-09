@@ -1,0 +1,197 @@
+// InsightDoc — Prisma Schema (SQLite adaptation of spec §4)
+// NOTE: Sandbox mandates SQLite. Postgres-specific features adapted:
+//  - enums → String columns validated by Zod at the app boundary
+//  - pgvector `vector(1536)` → JSON-encoded TEXT column + application-layer cosine search
+//  - Json columns → TEXT with typed (de)serialization helpers in src/lib/types.ts
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Users & Tenancy ─────────────────────────────────────────────────────────
+
+model User {
+  id          String            @id @default(uuid())
+  email       String            @unique
+  name        String?
+  avatarUrl   String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  memberships WorkspaceMember[]
+  apiKeys     ApiKey[]
+  chats       ChatSession[]
+  usageEvents UsageEvent[]
+
+  @@map("users")
+}
+
+model Workspace {
+  id          String            @id @default(uuid())
+  name        String
+  slug        String            @unique
+  description String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  members     WorkspaceMember[]
+  documents   Document[]
+  chats       ChatSession[]
+  auditLogs   AuditLog[]
+
+  @@map("workspaces")
+}
+
+model WorkspaceMember {
+  id          String    @id @default(uuid())
+  role        String    @default("MEMBER") // Role: ADMIN | MEMBER | VIEWER (Zod-validated)
+  userId      String
+  workspaceId String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+
+  @@unique([userId, workspaceId])
+  @@index([workspaceId])
+  @@map("workspace_members")
+}
+
+// ─── Documents & Vector Chunks ───────────────────────────────────────────────
+
+model Document {
+  id           String         @id @default(uuid())
+  title        String
+  fileName     String
+  fileSize     Int
+  fileUrl      String // local storage key, e.g. "uploads/<uuid>.pdf"
+  mimeType     String         @default("application/pdf")
+  pageCount    Int            @default(0)
+  status       String         @default("PENDING") // DocumentStatus (Zod-validated)
+  progress     Int            @default(0) // 0..100 ingestion progress
+  statusDetail String? // live worker phase copy shown under the ingestion bar (e.g. "OCR page 2/9…")
+  errorMessage String?
+  checksum     String? // sha256 for de-dup
+  chunkCount   Int            @default(0)
+  tokenCount   Int            @default(0)
+  embeddingModel String       @default("local-hashed-bow-1536-v1") // model that produced the stored vectors; mismatch triggers transparent reindex
+  starred      Boolean        @default(false) // user favorite flag for quick filtering
+  ocrPages     Int            @default(0) // >0 = text layer recovered via OCR on N pages
+  tags         String? // JSON string[] — analyst tags for library filtering/scoping
+  summary      String? // cached AI digest JSON (DocumentSummaryPayload) — regenerated on demand
+  summaryAt    DateTime?
+  summaryModel String?
+  workspaceId  String
+  workspace    Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  chunks       DocumentChunk[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([workspaceId])
+  @@map("documents")
+}
+
+model DocumentChunk {
+  id           String   @id @default(uuid())
+  documentId   String
+  document     Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  content      String
+  pageNumber   Int
+  chunkIndex   Int
+  // Stores { heading?: string; charStart?: number; charEnd?: number; tokenCount: number }
+  metadataJson String?
+  // JSON-encoded 1536-dim float vector (pgvector substitute)
+  embeddingJson String?
+  createdAt    DateTime @default(now())
+
+  @@index([documentId])
+  @@map("document_chunks")
+}
+
+// ─── Conversational RAG ──────────────────────────────────────────────────────
+
+model ChatSession {
+  id          String        @id @default(uuid())
+  title       String        @default("New Chat")
+  pinnedAt    DateTime? // set = pinned to top of the session rail (quick access)
+  workspaceId String
+  userId      String
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages    ChatMessage[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([workspaceId])
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id            String      @id @default(uuid())
+  chatSessionId String
+  chatSession   ChatSession @relation(fields: [chatSessionId], references: [id], onDelete: Cascade)
+  role          String // 'user' | 'assistant' | 'system'
+  content       String
+  // Array<{ documentId, documentTitle, pageNumber, snippet, score }>
+  citationsJson String?
+  tokenUsage    Int?
+  latencyMs     Int?
+  retrievalInfoJson String? // { vectorHits, keywordHits, fused, reranked, timings }
+  feedback      String? // 'UP' | 'DOWN' | null — human quality signal on assistant answers (Zod-validated)
+  createdAt     DateTime    @default(now())
+
+  @@index([chatSessionId])
+  @@map("chat_messages")
+}
+
+// ─── Platform Services ───────────────────────────────────────────────────────
+
+model ApiKey {
+  id        String   @id @default(uuid())
+  keyHash   String   @unique
+  name      String
+  prefix    String? // display hint e.g. "idoc_live_ab12…"
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  lastUsedAt DateTime?
+
+  @@map("api_keys")
+}
+
+// Token usage & cost tracking (spec §2.4)
+model UsageEvent {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspaceId String?
+  kind        String // 'embedding' | 'chat' | 'rerank'
+  model       String
+  promptTokens  Int    @default(0)
+  completionTokens Int @default(0)
+  totalTokens Int      @default(0)
+  estimatedCostUsd Float  @default(0)
+  createdAt   DateTime @default(now())
+
+  @@index([workspaceId])
+  @@index([createdAt])
+  @@map("usage_events")
+}
+
+// Comprehensive audit trail (spec §2.4)
+model AuditLog {
+  id          String    @id @default(uuid())
+  workspaceId String?
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  actorEmail  String
+  action      String // 'document.upload' | 'document.delete' | 'chat.query' | 'export.create' | ...
+  targetType  String? // 'document' | 'chat' | 'workspace' | ...
+  targetId    String?
+  detailJson  String?
+  createdAt   DateTime  @default(now())
+
+  @@index([workspaceId])
+  @@map("audit_logs")
+}

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1E293B"/>
+      <stop offset="1" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="spark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#34D399"/>
+      <stop offset="1" stop-color="#0D9488"/>
+    </linearGradient>
+  </defs>
+
+  <!-- App tile -->
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#tile)"/>
+  <rect x="17.5" y="17.5" width="477" height="477" rx="110.5" stroke="#334155" stroke-width="3" opacity="0.55" fill="none"/>
+
+  <!-- Document sheet with folded top-right corner -->
+  <path d="M192 136 H300 L344 180 V352 A24 24 0 0 1 320 376 H192 A24 24 0 0 1 168 352 V160 A24 24 0 0 1 192 136 Z" fill="#F1F5F9"/>
+  <path d="M300 136 V180 H344 Z" fill="#94A3B8"/>
+
+  <!-- Text lines (third line is the "insight" hit) -->
+  <rect x="200" y="232" width="96" height="14" rx="7" fill="#CBD5E1"/>
+  <rect x="200" y="264" width="112" height="14" rx="7" fill="#CBD5E1"/>
+  <rect x="200" y="296" width="80" height="14" rx="7" fill="url(#spark)"/>
+  <rect x="200" y="328" width="104" height="14" rx="7" fill="#CBD5E1"/>
+
+  <!-- Insight spark -->
+  <path d="M356 76 C361 110 374 123 408 128 C374 133 361 146 356 180 C351 146 338 133 304 128 C338 123 351 110 356 76 Z" fill="url(#spark)"/>
+  <circle cx="356" cy="128" r="6" fill="#FFFFFF" opacity="0.95"/>
+</svg>

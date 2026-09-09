@@ -1,0 +1,590 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.625rem;
+  /* Light mode — crisp off-white (spec §6.1) */
+  --background: oklch(0.984 0.003 247.86);
+  --foreground: oklch(0.208 0.042 265.75);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.208 0.042 265.75);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.208 0.042 265.75);
+  --primary: oklch(0.585 0.233 277.12); /* Deep Indigo #6366F1 */
+  --primary-foreground: oklch(0.984 0.003 247.86);
+  --secondary: oklch(0.955 0.008 250);
+  --secondary-foreground: oklch(0.279 0.041 260.03);
+  --muted: oklch(0.955 0.008 250);
+  --muted-foreground: oklch(0.554 0.046 257.42);
+  --accent: oklch(0.955 0.02 250);
+  --accent-foreground: oklch(0.279 0.041 260.03);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.92 0.013 255.51);
+  --input: oklch(0.92 0.013 255.51);
+  --ring: oklch(0.585 0.233 277.12);
+  --chart-1: oklch(0.585 0.233 277.12); /* indigo */
+  --chart-2: oklch(0.715 0.143 215.22); /* cyan   */
+  --chart-3: oklch(0.623 0.214 259.82); /* blue   */
+  --chart-4: oklch(0.704 0.04 256.79);  /* slate  */
+  --chart-5: oklch(0.627 0.194 149.21); /* emerald*/
+  --sidebar: oklch(0.972 0.006 247.9);
+  --sidebar-foreground: oklch(0.208 0.042 265.75);
+  --sidebar-primary: oklch(0.585 0.233 277.12);
+  --sidebar-primary-foreground: oklch(0.984 0.003 247.86);
+  --sidebar-accent: oklch(0.945 0.015 255);
+  --sidebar-accent-foreground: oklch(0.208 0.042 265.75);
+  --sidebar-border: oklch(0.92 0.013 255.51);
+  --sidebar-ring: oklch(0.585 0.233 277.12);
+}
+
+.dark {
+  /* Dark mode — soft slate grey #0F172A (spec §6.1, default) */
+  --background: oklch(0.212 0.039 262);
+  --foreground: oklch(0.984 0.003 247.86);
+  --card: oklch(0.254 0.041 261);
+  --card-foreground: oklch(0.984 0.003 247.86);
+  --popover: oklch(0.254 0.041 261);
+  --popover-foreground: oklch(0.984 0.003 247.86);
+  --primary: oklch(0.606 0.218 277.5); /* Indigo #6366F1 */
+  --primary-foreground: oklch(0.984 0.003 247.86);
+  --secondary: oklch(0.31 0.046 260);
+  --secondary-foreground: oklch(0.92 0.013 255.51);
+  --muted: oklch(0.31 0.046 260);
+  --muted-foreground: oklch(0.704 0.04 256.79); /* slate-400 #94A3B8 */
+  --accent: oklch(0.34 0.06 265);
+  --accent-foreground: oklch(0.92 0.02 250);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.606 0.218 277.5);
+  --chart-1: oklch(0.606 0.218 277.5);
+  --chart-2: oklch(0.715 0.143 215.22);
+  --chart-3: oklch(0.623 0.214 259.82);
+  --chart-4: oklch(0.704 0.04 256.79);
+  --chart-5: oklch(0.696 0.17 162.48);
+  --sidebar: oklch(0.233 0.041 262);
+  --sidebar-foreground: oklch(0.984 0.003 247.86);
+  --sidebar-primary: oklch(0.606 0.218 277.5);
+  --sidebar-primary-foreground: oklch(0.984 0.003 247.86);
+  --sidebar-accent: oklch(0.31 0.05 262);
+  --sidebar-accent-foreground: oklch(0.984 0.003 247.86);
+  --sidebar-border: oklch(1 0 0 / 8%);
+  --sidebar-ring: oklch(0.606 0.218 277.5);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  /* Brand-tinted text selection (spec §6.1 detail) */
+  ::selection {
+    background: color-mix(in oklch, var(--primary) 28%, transparent);
+    color: var(--foreground);
+  }
+  /* Consistent, quieter focus rings */
+  :focus-visible {
+    outline: 2px solid color-mix(in oklch, var(--primary) 65%, transparent);
+    outline-offset: 2px;
+  }
+}
+
+/* Kbd chip — consistent everywhere (sidebar, dialogs, tooltips) */
+kbd {
+  @apply inline-flex items-center justify-center rounded-md border bg-muted px-1.5 py-0.5 font-mono text-[10px] font-medium text-muted-foreground;
+  box-shadow: 0 1px 0 0 color-mix(in oklch, var(--foreground) 10%, transparent);
+}
+
+/* ── InsightDoc design system extensions (spec §6.1) ──────────────────────── */
+
+/* Citation pill highlight color — muted cyan for vector match highlights */
+:root {
+  --match-highlight: oklch(0.715 0.143 215.22 / 35%);
+  --match-highlight-ring: oklch(0.715 0.143 215.22 / 80%);
+}
+.dark {
+  --match-highlight: oklch(0.715 0.143 215.22 / 30%);
+  --match-highlight-ring: oklch(0.715 0.143 215.22 / 90%);
+}
+
+.match-highlight {
+  background: var(--match-highlight);
+  box-shadow: 0 0 0 2px var(--match-highlight-ring);
+  border-radius: 2px;
+  color: inherit;
+}
+
+/* In-PDF full-text search matches — amber, distinct from cyan citation marks */
+:root {
+  --search-highlight: oklch(0.79 0.16 70 / 45%);
+  --search-highlight-ring: oklch(0.79 0.16 70 / 85%);
+}
+.dark {
+  --search-highlight: oklch(0.79 0.16 70 / 35%);
+  --search-highlight-ring: oklch(0.79 0.16 70 / 90%);
+}
+.search-highlight {
+  background: var(--search-highlight);
+  box-shadow: 0 0 0 2px var(--search-highlight-ring);
+  border-radius: 2px;
+  color: inherit;
+}
+.search-highlight-current {
+  background: oklch(0.72 0.17 55 / 75%);
+  box-shadow: 0 0 0 2px oklch(0.72 0.17 55 / 95%), 0 0 14px oklch(0.72 0.17 55 / 55%);
+  border-radius: 2px;
+  color: inherit;
+}
+
+/* Micro-interaction: springy pop for toggled actions (feedback thumbs etc.) */
+@keyframes insightdoc-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.35) rotate(-6deg); }
+  100% { transform: scale(1); }
+}
+.insightdoc-pop:active {
+  animation: insightdoc-pop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Slim scrollbars for chat + PDF panes */
+.insightdoc-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(0.55 0.03 260 / 45%) transparent;
+}
+.insightdoc-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.insightdoc-scroll::-webkit-scrollbar-thumb {
+  background: oklch(0.55 0.03 260 / 40%);
+  border-radius: 8px;
+}
+.insightdoc-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Radix ScrollArea viewport renders its child as `display: table`, which sizes
+   to content and defeats width truncation (truncate/ellipsis) — list items then
+   overflow under adjacent panels. Force block layout inside all viewports. */
+[data-radix-scroll-area-viewport] > div {
+  display: block !important;
+  min-width: 100% !important;
+}
+
+/* Streaming caret for LLM output */
+@keyframes insightdoc-caret {
+  0%, 45% { opacity: 1; }
+  50%, 95% { opacity: 0; }
+}
+.streaming-caret::after {
+  content: '▍';
+  margin-left: 1px;
+  animation: insightdoc-caret 0.9s steps(1) infinite;
+  color: var(--primary);
+}
+
+/* Subtle grid texture for hero surfaces */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, oklch(1 0 0 / 4%) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(1 0 0 / 4%) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Score bar shimmer — animated sheen over relevance meters */
+@keyframes score-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(220%); }
+}
+.score-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.score-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 45%;
+  background: linear-gradient(90deg, transparent, oklch(1 0 0 / 45%), transparent);
+  animation: score-shimmer 2.2s ease-in-out infinite;
+}
+
+/* Dashboard stat cards: hover sheen sweep */
+.stat-card {
+  position: relative;
+  isolation: isolate;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(120px 60px at 85% -10%, color-mix(in oklch, var(--primary) 10%, transparent), transparent);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.stat-card:hover::before {
+  opacity: 1;
+}
+
+/* Follow-up suggestion chips: staggered rise-in (delay set inline per chip) */
+@keyframes followup-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.followup-chip {
+  animation: followup-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.followup-chip:hover {
+  box-shadow: 0 2px 10px -2px color-mix(in oklch, var(--primary) 28%, transparent);
+}
+
+/* TTS narration equalizer — three bouncing bars shown while reading aloud */
+.eq {
+  height: 12px;
+  align-items: flex-end;
+}
+.eq-bar {
+  width: 2.5px;
+  border-radius: 2px;
+  background: currentColor;
+  animation: eq-bounce 0.9s ease-in-out infinite;
+}
+.eq-bar:nth-child(1) { height: 5px; }
+.eq-bar:nth-child(2) { height: 11px; animation-delay: 0.22s; }
+.eq-bar:nth-child(3) { height: 7px; animation-delay: 0.44s; }
+@keyframes eq-bounce {
+  0%, 100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1); }
+}
+
+/* Table rows: gentle hover tint consistent with cards */
+[data-slot="table-row"]:hover {
+  background: color-mix(in oklch, var(--primary) 4%, transparent);
+}
+
+/* ─── Star / favorites ──────────────────────────────────────────────────── */
+
+/* One-shot bounce when a star is set (paired with the fill-current flip) */
+@keyframes star-pop {
+  0% { transform: scale(0.6) rotate(-14deg); }
+  55% { transform: scale(1.35) rotate(6deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+.star-pop {
+  animation: star-pop 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Starred rows get a faint warm wash on top of the standard hover */
+[data-slot="table-row"].row-starred:hover {
+  background: color-mix(in oklch, var(--amber-star, #f59e0b) 6%, transparent);
+}
+
+/* Starred filter chip focus ring tuned to amber instead of primary */
+.star-filter-focus:focus-visible {
+  outline: 2px solid color-mix(in oklch, #f59e0b 70%, transparent);
+  outline-offset: 2px;
+}
+
+/* bump */
+
+/* ─── Chat pinning ──────────────────────────────────────────────────────── */
+
+/* Pinned session rows: warm wash + amber rail, slightly stronger on hover */
+.chat-row-pinned {
+  background: color-mix(in oklch, #f59e0b 5%, transparent);
+}
+.chat-row-pinned:hover,
+.chat-row-pinned.bg-primary\/10 {
+  background: color-mix(in oklch, #f59e0b 9%, transparent);
+}
+
+/* ─── AI digest card ────────────────────────────────────────────────────── */
+
+/* Sheen sweep across the digest header when a summary exists */
+.digest-card {
+  position: relative;
+}
+.digest-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in oklch, var(--primary) 55%, transparent), transparent);
+  opacity: 0.8;
+  pointer-events: none;
+}
+/* Suggested-question rows: nudged arrow + border glow on hover */
+.digest-card button:hover {
+  box-shadow: 0 1px 8px -3px color-mix(in oklch, var(--primary) 30%, transparent);
+}
+
+/* ─── Prompt library ────────────────────────────────────────────────────── */
+
+/* Popover entrance tuned to match the composer rounding */
+.prompt-row + .prompt-row {
+  margin-top: 1px;
+}
+
+/* bump */
+
+/* ─── Document tags ─────────────────────────────────────────────────────── */
+
+/* Tag chips: subtle lift + ring on hover (rows, inspector, editor) */
+.doc-tag {
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.doc-tag:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 1px 6px -2px color-mix(in oklch, var(--primary) 45%, transparent);
+}
+
+/* Library filter chips: active state already tinted — add a check pulse */
+.doc-tag-filter {
+  transition: all 0.15s ease;
+}
+.doc-tag-filter:active {
+  transform: scale(0.95);
+}
+
+/* OCR badge: faint scanline sweep to hint "machine-read" */
+@keyframes ocr-sweep {
+  0% { background-position: -140% 0; }
+  100% { background-position: 240% 0; }
+}
+[data-slot="badge"].gap-0\.5.border-cyan-500\/30 {
+  position: relative;
+  overflow: hidden;
+}
+[data-slot="badge"].gap-0\.5.border-cyan-500\/30::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, color-mix(in oklch, var(--color-cyan-400, #22d3ee) 35%, transparent) 50%, transparent 70%);
+  background-size: 220% 100%;
+  animation: ocr-sweep 2.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ─── Shared digest note card (chat) ────────────────────────────────────── */
+
+/* Entrance: gentle rise + fade so shared digests feel like arriving artifacts */
+@keyframes note-in {
+  0% { opacity: 0; transform: translateY(8px) scale(0.985); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.note-card {
+  animation: note-in 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+/* Top sheen — matches the inspector digest card family */
+.note-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in oklch, var(--primary) 55%, transparent), transparent);
+  opacity: 0.85;
+  pointer-events: none;
+}
+.note-card {
+  position: relative;
+  transition: box-shadow 0.2s ease;
+}
+.note-card:hover {
+  box-shadow: 0 2px 14px -6px color-mix(in oklch, var(--primary) 35%, transparent);
+}
+/* Suggested-question rows inside the note card reuse the digest hover glow */
+.note-card button:hover {
+  box-shadow: 0 1px 8px -3px color-mix(in oklch, var(--primary) 30%, transparent);
+}
+
+/* ─── Live ingestion status detail ──────────────────────────────────────── */
+
+/* Worker phase copy under the ingestion bar: sweeping text shimmer */
+@keyframes status-shimmer {
+  0% { background-position: -160% 0; }
+  100% { background-position: 260% 0; }
+}
+.shimmer-text {
+  background: linear-gradient(
+    100deg,
+    var(--muted-foreground) 38%,
+    color-mix(in oklch, var(--foreground) 78%, var(--primary)) 50%,
+    var(--muted-foreground) 62%
+  );
+  background-size: 220% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: status-shimmer 2.4s linear infinite;
+}
+
+/* ─── Tag manager (workspace vocabulary) ────────────────────────────────── */
+
+/* Usage bar: fills proportionally, subtle primary tint */
+.tag-usage-bar {
+  background: color-mix(in oklch, var(--primary) 22%, transparent);
+  transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* Vocabulary rows: soft hover wash + nudge */
+.tag-mgmt-row {
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+.tag-mgmt-row:hover {
+  background: color-mix(in oklch, var(--primary) 5%, transparent);
+  transform: translateX(2px);
+}
+/* Danger confirm state: rose wash so the irreversible step is unmistakable */
+.tag-mgmt-row[data-danger='true'] {
+  background: color-mix(in oklch, var(--destructive) 7%, transparent);
+  border-color: color-mix(in oklch, var(--destructive) 30%, transparent);
+}
+
+/* ─── Digest share actions (inspector) ──────────────────────────────────── */
+
+/* Header icon button: primary tint + lift on hover */
+.digest-share-btn {
+  color: var(--primary);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.digest-share-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px -3px color-mix(in oklch, var(--primary) 45%, transparent);
+}
+/* Full-width CTA under the digest footer: subtle glow + lift */
+.digest-share-cta {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.digest-share-cta:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in oklch, var(--primary) 45%, transparent);
+  box-shadow: 0 2px 12px -5px color-mix(in oklch, var(--primary) 55%, transparent);
+}
+
+/* ─── Digest compare (side-by-side) ─────────────────────────────────────── */
+
+/* Bulk-bar trigger: appears only when exactly 2 rows are selected */
+.digest-compare-btn {
+  color: var(--primary);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.digest-compare-btn:hover {
+  transform: translateY(-1px);
+  background: color-mix(in oklch, var(--primary) 10%, transparent);
+  box-shadow: 0 2px 10px -4px color-mix(in oklch, var(--primary) 50%, transparent);
+}
+
+/* Columns: rise-in + soft top sheen mirroring the digest card language */
+.digest-compare-col {
+  animation: compare-rise 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  position: relative;
+  overflow: hidden;
+}
+.digest-compare-col::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, color-mix(in oklch, var(--primary) 55%, transparent), transparent);
+  opacity: 0.7;
+}
+@keyframes compare-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Overview paragraph: gentle fade-in after the column lands */
+.digest-compare-overview {
+  animation: compare-fade 0.4s ease 0.12s both;
+}
+@keyframes compare-fade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Key points: staggered slide-in (delay set inline per row) */
+.digest-compare-point {
+  animation: compare-fade 0.32s ease both;
+}
+
+/* Entity chips: hover lift; shared state adds an emerald glow pulse */
+.digest-compare-entity {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.digest-compare-entity:hover {
+  transform: translateY(-1px);
+}
+.digest-compare-entity.border-emerald-500\/50 {
+  box-shadow: 0 0 0 1px color-mix(in oklch, oklch(0.72 0.15 160) 25%, transparent);
+}
+
+/* ─── Ingestion completion toast accent ─────────────────────────────────── */
+
+/* Sonner success toasts get a hairline primary top edge in this app */
+[data-sonner-toast][data-type='success'] {
+  border-top: 2px solid color-mix(in oklch, oklch(0.72 0.15 155) 60%, transparent);
+}
+
+/* bump */
