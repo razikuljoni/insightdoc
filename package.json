@@ -28,7 +28,7 @@
   },
   "scripts": {
     "dev": "next dev -p 3000 2>&1 | tee dev.log",
-    "build": "node -e \"const u=process.env.DATABASE_URL||process.env.POSTGRES_PRISMA_URL||process.env.POSTGRES_URL; if(u&&(u.startsWith('postgresql://')||u.startsWith('postgres://'))){process.env.DATABASE_URL=u; require('child_process').execSync('npx prisma db push --accept-data-loss',{stdio:'inherit',env:process.env})}else{console.log('[build] Skipping db push: no postgres url')}\" && prisma generate && next build",
+    "build": "prisma generate && next build",
     "build:standalone": "BUILD_STANDALONE=1 next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
     "start": "NODE_ENV=production node .next/standalone/server.js 2>&1 | tee server.log",
     "lint": "eslint .",
