@@ -118,8 +118,9 @@ inside that file.
 |---|---|---|
 | `DATABASE_URL` | ✅ | Prisma connection string. Default: `file:../db/custom.db` (relative to `prisma/`) |
 | `NEXT_PUBLIC_SITE_URL` | ⬜ prod | Canonical origin — drives metadata, OpenGraph, `robots.txt`, `sitemap.xml` |
-| `ZAI_API_KEY` | ✅ serverless | AI provider key. On Vercel set this **and** `ZAI_BASE_URL` |
-| `ZAI_BASE_URL` | ✅ serverless | AI provider base URL. Locally the `.z-ai-config` file is used instead |
+| `AI_API_KEY` | ✅ serverless | AI provider API key. On Vercel set this **and** `AI_BASE_URL` |
+| `AI_BASE_URL` | ✅ serverless | AI provider base URL (e.g. OpenAI / Gemini / Groq / OpenRouter) |
+| `AI_MODEL` | ⬜ | AI model identifier (default: `gemini-3.1-flash-lite`) |
 | `INSIGHTDOC_OCR` | ⬜ | `1` (default) enables the OCR fallback, `0` disables |
 | `INSIGHTDOC_OCR_MAX_PAGES` | ⬜ | Max OCR pages per document (default `12`) |
 
@@ -155,7 +156,7 @@ fidelity:
 │   │   └── api/v1/…            # REST + SSE endpoints
 │   ├── components/insightdoc/  # Feature components (5 views, dialogs, palette)
 │   │   └── ui/                 # shadcn/ui primitives
-│   ├── server/                 # queue, storage, RAG retriever, worker, zai bootstrap
+│   ├── server/                 # queue, storage, RAG retriever, worker, ai bootstrap
 │   ├── lib/                    # db, embeddings, chunker, tokenizer, schemas
 │   └── hooks/                  # use-toast, use-mobile
 ├── prisma/schema.prisma        # Data model (workspace → document → chunk → chat…)

@@ -9,12 +9,12 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getCurrentUser } from '@/server/bootstrap';
 import { FollowupsResponseSchema } from '@/lib/types';
-import { getZAI } from '@/server/zai';
+import { getAIClient, getAIModel } from '@/server/ai';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
-const LLM_MODEL = 'insightdoc-llm';
+const LLM_MODEL = getAIModel();
 
 const FOLLOWUP_PROMPT = `You suggest follow-up questions for an enterprise document Q&A assistant.
 Given the latest exchange between a user and the assistant, propose exactly 3 follow-up questions the user might naturally ask next.
@@ -57,9 +57,9 @@ export async function POST(
       .map((m) => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content.replace(/\s+/g, ' ').slice(0, 1200)}`)
       .join('\n\n');
 
-    const zai = await getZAI();
+    const ai = await getAIClient();
 
-    const completion = await zai.chat.completions.create({
+    const completion = await ai.chat.completions.create({
       model: LLM_MODEL,
       messages: [
         { role: 'system', content: FOLLOWUP_PROMPT },

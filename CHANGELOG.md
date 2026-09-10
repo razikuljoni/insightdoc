@@ -50,7 +50,7 @@ First production-ready release.
 - Generated brand kit from `public/brand/*.svg`: multi-size `favicon.ico`,
   SVG/PNG icons, apple-touch-icon, 1200×630 OG/Twitter card.
 - Env-aware AI provider bootstrap (`src/server/zai.ts`) enabling serverless
-  (Vercel) deployment via `ZAI_API_KEY`/`ZAI_BASE_URL`.
+  (Vercel) deployment via `AI_API_KEY`/`AI_BASE_URL`/`AI_MODEL`.
 - Security headers; strict type-checking in builds; `postinstall` Prisma generate;
   `vercel.json`; Docker + compose deployment; documentation suite
   (README, DEPLOYMENT, ARCHITECTURE, API, CONTRIBUTING, SECURITY, LICENSE).

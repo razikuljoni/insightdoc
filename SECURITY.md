@@ -19,7 +19,7 @@ before exposing it publicly:
 | Auth | Single implicit demo user (`getCurrentUser`) — no login | Put the app behind your SSO/reverse-proxy auth, or wire NextAuth (dependency already present) |
 | Uploads | MIME + extension + size validation, SHA-256 dedupe, UUID storage keys, no user-controlled paths | Keep the size limit sane for your storage backend |
 | File serving | PDFs stream back only through `/api/v1/documents/:id/file` with server-generated keys | Keep `storage/` out of any public static path (already git-ignored) |
-| AI routes | Credentials live server-side only (`src/server/zai.ts`); SDK is never bundled client-side | Provide `ZAI_API_KEY`/`ZAI_BASE_URL` via platform secrets, never in client code |
+| AI routes | Credentials live server-side only (`src/server/zai.ts`); SDK is never bundled client-side | Provide `AI_API_KEY`/`AI_BASE_URL` via platform secrets, never in client code |
 | Headers | `nosniff`, `SAMEORIGIN`, `strict-origin-when-cross-origin`, scoped `Permissions-Policy`, `no-store` on `/api/*` (see `next.config.ts`) | Add a CSP tailored to your deployment if you embed the app |
 | SQL | Prisma parameterized queries everywhere; no raw SQL string building | — |
 | Dependencies | `bun.lock` pins the tree; renovate/audit in CI | Run `bun pm audit` (or `npm audit`) as part of your pipeline |

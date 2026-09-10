@@ -8,7 +8,7 @@
 import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/server/bootstrap';
 import { TranscribeResponseSchema } from '@/lib/types';
-import { getZAI } from '@/server/zai';
+import { getAIClient } from '@/server/ai';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -34,9 +34,9 @@ export async function POST(request: Request) {
 
     const bytes = Buffer.from(await audio.arrayBuffer());
 
-    const zai = await getZAI();
+    const ai = await getAIClient();
 
-    const response = await zai.audio.asr.create({ file_base64: bytes.toString('base64') });
+    const response = await ai.audio.asr.create({ file_base64: bytes.toString('base64') });
     const text = (response?.text ?? '').replace(/\s+/g, ' ').trim();
 
     if (!text) {

@@ -9,10 +9,10 @@ services:
       - DATABASE_URL=file:/app/db/custom.db
       # Set the public origin so SEO/OG metadata resolves to your host:
       # - NEXT_PUBLIC_SITE_URL=https://insightdoc.example.com
-      # AI provider (set BOTH for serverless-style env config; alternatively
-      # mount a .z-ai-config file at /app/.z-ai-config):
-      # - ZAI_API_KEY=your-key
-      # - ZAI_BASE_URL=https://api.z.ai/api/paas/v4
+      # AI provider:
+      # - AI_API_KEY=your-key
+      # - AI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai
+      # - AI_MODEL=gemini-3.1-flash-lite
       # Pipeline tuning (optional):
       # - INSIGHTDOC_OCR=1
       # - INSIGHTDOC_OCR_MAX_PAGES=12

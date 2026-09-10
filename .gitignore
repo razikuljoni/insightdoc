@@ -41,6 +41,7 @@ bun.lock
 .vscode/
 *.swp
 *.swo
+.omo
 
 # Code Graph / Local Tooling caches
 .codegraph/

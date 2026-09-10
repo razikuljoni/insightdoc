@@ -10,7 +10,7 @@ import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/server/bootstrap';
 import { recordAudit } from '@/server/audit';
 import { SpeechRequestSchema } from '@/lib/types';
-import { getZAI } from '@/server/zai';
+import { getAIClient, type AIClient } from '@/server/ai';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 120;
@@ -91,15 +91,15 @@ function buildWav(pcm: Buffer, numChannels: number, bitsPerSample: number): Buff
 
 /** Synthesize one chunk with bounded retries (upstream occasionally 500s transiently). */
 async function ttsWithRetry(
-  zai: Awaited<ReturnType<(typeof import('z-ai-web-dev-sdk'))['default']['create']>>,
+  ai: AIClient,
   chunk: string,
   speed: number,
   attempts = 3,
-): Promise<Awaited<ReturnType<typeof zai.audio.tts.create>>> {
+): Promise<Awaited<ReturnType<typeof ai.audio.tts.create>>> {
   let lastError: unknown;
   for (let i = 0; i < attempts; i++) {
     try {
-      return await zai.audio.tts.create({
+      return await ai.audio.tts.create({
         input: chunk,
         voice: VOICE,
         speed,
@@ -139,7 +139,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Nothing speakable in this answer' }, { status: 422 });
     }
 
-    const zai = await getZAI();
+    const ai = await getAIClient();
 
     const chunks = splitForTts(speakable);
     let bitsPerSample = 16;
@@ -147,7 +147,7 @@ export async function POST(request: Request) {
     const pcmParts: Buffer[] = [];
 
     for (const chunk of chunks) {
-      const response = await ttsWithRetry(zai, chunk, speed);
+      const response = await ttsWithRetry(ai, chunk, speed);
       const arrayBuffer = await response.arrayBuffer();
       const { pcm, bitsPerSample: bits, numChannels: ch } = extractWavPcm(
         Buffer.from(new Uint8Array(arrayBuffer)),

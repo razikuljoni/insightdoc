@@ -18,14 +18,14 @@ import { recordAudit, recordUsage } from '@/server/audit';
 import { retrieve, type RetrievableChunkRow } from '@/server/rag/retriever';
 import { StreamQuerySchema, type Citation, type SSEFrame } from '@/lib/types';
 import { estimateTokens } from '@/lib/tokenizer';
-import { getZAI } from '@/server/zai';
+import { getAIClient, getAIModel } from '@/server/ai';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 120;
 
 const MEMORY_WINDOW = 10; // conversational memory depth (spec §2.3)
 const CONTEXT_SNIPPET_CHARS = 1200;
-const LLM_MODEL = 'insightdoc-llm';
+const LLM_MODEL = getAIModel();
 
 const SYSTEM_PROMPT = `You are InsightDoc, a rigorous enterprise document intelligence assistant.
 You answer questions using ONLY the numbered context snippets retrieved from the user's document library.
@@ -229,11 +229,11 @@ export async function POST(
         const promptTokens = llmMessages.reduce((sum, m) => sum + estimateTokens(m.content), 0);
 
         // ── 5. Stream LLM tokens ──────────────────────────────────────────
-        const zai = await getZAI();
+        const ai = await getAIClient();
 
         let completion: unknown;
         try {
-          completion = await zai.chat.completions.create({
+          completion = await ai.chat.completions.create({
             model: LLM_MODEL,
             messages: llmMessages,
             temperature,

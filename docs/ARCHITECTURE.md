@@ -86,7 +86,7 @@ to Postgres (swap the provider, push, done).
 | Database | `prisma/schema.prisma` | SQLite | PostgreSQL (provider swap + push) |
 | Object storage | `src/server/storage.ts` | local disk `storage/uploads/` | S3 / R2 / Vercel Blob (same 4-function surface) |
 | Embeddings | `src/lib/embeddings.ts` (`EmbeddingService`) | deterministic local hashed embedder | provider API by implementing the interface |
-| LLM / TTS / ASR | `src/server/zai.ts` (`getZAI`) | z-ai-web-dev-sdk | any OpenAI-compatible gateway (env: `ZAI_API_KEY`, `ZAI_BASE_URL`) |
+| LLM / TTS / ASR | `src/server/ai.ts` (`getAIClient`) | z-ai-web-dev-sdk | any OpenAI-compatible gateway (env: `AI_API_KEY`, `AI_BASE_URL`, `AI_MODEL`) |
 | Job queue | `src/server/queue.ts` | in-process singleton | BullMQ + Redis or QStash for multi-instance scale |
 | OCR | `src/server/worker/ocr.ts` | tesseract.js (eng) | language packs / hosted OCR service |
 
@@ -94,7 +94,7 @@ to Postgres (swap the provider, push, done).
 
 - Server-generated storage keys only (no user-controlled paths).
 - Zod validation on API inputs; shared DTO schemas in `src/lib/types.ts`.
-- AI credentials never leave the server (`src/server/zai.ts` is server-only).
+- AI credentials never leave the server (`src/server/ai.ts` is server-only).
 - Hardening headers + `no-store` on `/api/*` (see `next.config.ts`).
 - Audit trail for privileged actions.
 

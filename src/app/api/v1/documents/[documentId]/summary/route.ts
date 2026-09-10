@@ -14,12 +14,12 @@ import { getCurrentUser } from '@/server/bootstrap';
 import { recordAudit, recordUsage } from '@/server/audit';
 import { estimateTokens } from '@/lib/tokenizer';
 import { DocumentSummaryPayloadSchema, DocumentSummaryResponseSchema, type DocumentSummaryResponse } from '@/lib/types';
-import { getZAI } from '@/server/zai';
+import { getAIClient, getAIModel } from '@/server/ai';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
-const LLM_MODEL = 'insightdoc-llm';
+const LLM_MODEL = getAIModel();
 /** Character budget for the grounded context (~6k tokens). */
 const MAX_CONTEXT_CHARS = 24_000;
 
@@ -80,8 +80,8 @@ function extractJson(raw: string): unknown {
 
 /** Single plain-completion call (no streaming, thinking off). */
 async function complete(prompt: string, system: string): Promise<string> {
-  const zai = await getZAI();
-  const completion = (await zai.chat.completions.create({
+  const ai = await getAIClient();
+  const completion = (await ai.chat.completions.create({
     model: LLM_MODEL,
     messages: [
       { role: 'system', content: system },
@@ -94,7 +94,7 @@ async function complete(prompt: string, system: string): Promise<string> {
 }
 
 async function generateDigest(context: string, title: string): Promise<unknown> {
-  const zai = await getZAI();
+  const ai = await getAIClient();
 
   const instruction = `You are InsightDoc's document analyst. Read the extracted passages of the document "${title}" below and produce a concise, strictly factual digest.
 
@@ -120,7 +120,7 @@ ${context}`;
 
   let completion: unknown;
   try {
-    completion = await zai.chat.completions.create({
+    completion = await ai.chat.completions.create({
       model: LLM_MODEL,
       messages,
       temperature: 0.2,

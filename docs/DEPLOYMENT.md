@@ -36,8 +36,9 @@ of each, plus the database/storage upgrade paths for serverless platforms.
    |---|---|---|
    | `DATABASE_URL` | your database URL | See §1.2 — SQLite works only for UI evaluation |
    | `NEXT_PUBLIC_SITE_URL` | `https://<your-app>.vercel.app` | Drives SEO/OG/canonical/sitemap URLs |
-   | `ZAI_API_KEY` | your AI provider key | **Required on Vercel** — the SDK's `.z-ai-config` file doesn't exist there |
-   | `ZAI_BASE_URL` | your AI provider base URL | Must accompany the key (e.g. `https://api.z.ai/api/paas/v4`) |
+   | `AI_API_KEY` | your AI provider key | **Required on Vercel** — serverless env for OpenAI / Gemini / Groq |
+   | `AI_BASE_URL` | your AI provider base URL | Must accompany key (e.g. `https://generativelanguage.googleapis.com/v1beta/openai`) |
+   | `AI_MODEL` | model identifier | Optional (e.g. `gemini-3.1-flash-lite`) |
 
 4. **Deploy.** First build takes ~2–3 minutes. Every push to `main` redeploys; PRs get
    preview URLs automatically.
@@ -155,8 +156,8 @@ public origin so SEO metadata resolves correctly.
    PDF viewer jumps to the page.
 4. `GET /robots.txt` shows the sitemap; `GET /sitemap.xml` resolves; share a link in a
    chat app and confirm the OG card (title + 1200×630 image) renders.
-5. If AI answers fail with a config error on Vercel → `ZAI_API_KEY`/`ZAI_BASE_URL`
-   are missing or partially set (both or neither).
+5. If AI answers fail with a config error on Vercel → `AI_API_KEY`/`AI_BASE_URL`
+   are missing or partially set (both required).
 
 ## Troubleshooting
 
@@ -164,7 +165,7 @@ public origin so SEO metadata resolves correctly.
 |---|---|---|
 | `PrismaClientInitializationError: file does not exist` | `DATABASE_URL` points to a path that isn't created | Run `bun run db:push` locally against the same URL; on Vercel use Postgres (§1.2) |
 | `attempt to write a readonly database` (Vercel) | SQLite on read-only serverless FS | Upgrade to Postgres (§1.2) |
-| AI routes 500 with config-not-found | SDK can't find `.z-ai-config` | Set `ZAI_API_KEY` **and** `ZAI_BASE_URL` |
+| AI routes 500 with config-not-found | Missing AI credentials | Set `AI_API_KEY` **and** `AI_BASE_URL` |
 | OG image 404 in social scrapers | `NEXT_PUBLIC_SITE_URL` unset/wrong | Set it to the public origin and redeploy |
 | OCR timeout on large scans | Function duration cap | Raise plan limits (Pro) or lower `INSIGHTDOC_OCR_MAX_PAGES` |
 | `prisma generate` missing types in CI | Dependency install skipped scripts | Ensure `postinstall` isn't disabled (`npm ci --ignore-scripts` off) |

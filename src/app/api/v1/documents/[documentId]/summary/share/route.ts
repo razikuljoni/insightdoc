@@ -9,6 +9,7 @@
  * this is an annotation-style action, not content mutation.
  */
 import { NextResponse } from 'next/server';
+import { getAIModel } from '@/server/ai';
 import { db } from '@/lib/db';
 import { getCurrentUser } from '@/server/bootstrap';
 import { recordAudit } from '@/server/audit';
@@ -125,7 +126,7 @@ export async function POST(
       documentId: document.id,
       documentTitle: document.title,
       digest: digestParsed.data,
-      model: document.summaryModel ?? 'insightdoc-llm',
+      model: document.summaryModel ?? getAIModel(),
       generatedAt: (document.summaryAt ?? new Date()).toISOString(),
     });
 
