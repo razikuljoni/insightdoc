@@ -48,3 +48,9 @@ bun.lock
 .vercel
 .env*
 *.tsbuildinfo
+
+# Local agent & tooling artifacts
+.agents/
+.claude/
+.tesseract-cache/
+skills-lock.json
