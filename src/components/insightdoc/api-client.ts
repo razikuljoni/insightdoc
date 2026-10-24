@@ -147,11 +147,19 @@ export function uploadDocuments(
           errors?: Array<{ fileName: string; error: string }>;
           error?: string;
         };
-        if (xhr.status >= 200 && xhr.status < 300 && body.documents) {
+        // The upload route returns per-file results even on 400
+        // ({ documents: [], errors: [{ fileName, error }] }). Resolve those
+        // so callers can show the real per-file error instead of a generic
+        // "Upload failed (400)" — and so partial successes aren't lost.
+        if (Array.isArray(body.documents)) {
           const documents = body.documents.map((d) => DocumentDTOSchema.parse(d));
           resolve({ documents, errors: body.errors ?? [] });
         } else {
-          reject(new Error(body.error ?? `Upload failed (${xhr.status})`));
+          reject(
+            new Error(
+              body.error ?? body.errors?.[0]?.error ?? `Upload failed (${xhr.status})`,
+            ),
+          );
         }
       } catch {
         reject(new Error('Malformed upload response'));

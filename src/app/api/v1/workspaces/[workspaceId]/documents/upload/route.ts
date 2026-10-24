@@ -75,6 +75,7 @@ export async function POST(
     const queue = await getQueue();
 
     for (const file of files) {
+      let createdDocId: string | null = null;
       try {
         if (file.size === 0) throw new Error('File is empty');
         if (file.size > MAX_FILE_SIZE_BYTES) {
@@ -119,6 +120,7 @@ export async function POST(
           },
         });
 
+        createdDocId = doc.id;
         const { key } = await writeDocumentFile(doc.id, bytes);
         await db.document.update({ where: { id: doc.id }, data: { fileUrl: key } });
 
@@ -138,15 +140,32 @@ export async function POST(
           detail: { fileName: file.name, fileSize: file.size, checksum },
         });
       } catch (fileError) {
-        errors.push({
-          fileName: file.name,
-          error: fileError instanceof Error ? fileError.message : 'Upload failed',
-        });
+        const message = fileError instanceof Error ? fileError.message : 'Upload failed';
+        // Don't leave a PENDING orphan behind: the row was created before
+        // the file write, and a PENDING row blocks re-upload as "Duplicate"
+        // and shows as "processing" forever (no job was ever enqueued).
+        // Marking it FAILED lets the UI show the real error and lets the
+        // user retry the same file (dedupe excludes FAILED rows).
+        if (createdDocId) {
+          await db.document
+            .update({
+              where: { id: createdDocId },
+              data: { status: 'FAILED', progress: 100, errorMessage: message },
+            })
+            .catch(() => {});
+        }
+        errors.push({ fileName: file.name, error: message });
       }
     }
 
     return NextResponse.json(
-      { documents: created, errors },
+      {
+        documents: created,
+        errors,
+        // api-client's generic handler reads only `error`, so surface the
+        // first per-file error here too instead of a bare "Upload failed (400)".
+        ...(created.length === 0 && errors.length > 0 ? { error: errors[0].error } : {}),
+      },
       { status: created.length > 0 ? 201 : 400 },
     );
   } catch (error) {

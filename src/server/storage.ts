@@ -8,7 +8,12 @@ import { createHash } from 'crypto';
 import { mkdir, unlink, writeFile } from 'fs/promises';
 import path from 'path';
 
-const STORAGE_ROOT = path.join(process.cwd(), 'storage', 'uploads');
+// Vercel's serverless filesystem is read-only except /tmp (upload failed
+// in production with `ENOENT: mkdir '/var/task/storage'`). Local dev keeps
+// the repo-local folder so files persist on disk.
+const STORAGE_ROOT = process.env.VERCEL
+  ? path.join('/tmp', 'insightdoc-uploads')
+  : path.join(process.cwd(), 'storage', 'uploads');
 
 export async function ensureStorageRoot(): Promise<string> {
   await mkdir(STORAGE_ROOT, { recursive: true });
