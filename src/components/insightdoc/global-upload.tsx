@@ -32,6 +32,7 @@ export function GlobalUploadManager({ enabled = true }: GlobalUploadManagerProps
   const upsertDocument = useAppStore((s) => s.upsertDocument);
 
   const [phase, setPhase] = useState<Phase>('idle');
+  const [failed, setFailed] = useState(false);
   const [progress, setProgress] = useState(0);
   const [batch, setBatch] = useState<{ count: number; bytes: number }>({ count: 0, bytes: 0 });
   const [errors, setErrors] = useState<FileValidationError[]>([]);
@@ -59,13 +60,20 @@ export function GlobalUploadManager({ enabled = true }: GlobalUploadManagerProps
       busyRef.current = true;
       setBatch({ count: valid.length, bytes: valid.reduce((s, f) => s + f.size, 0) });
       setProgress(0);
+      setFailed(false);
       setPhase('uploading');
       try {
         const result = await uploadDocuments(activeWorkspaceId, valid, setProgress);
         result.documents.forEach(upsertDocument);
         const allErrors = [...validationErrors, ...result.errors];
         setErrors(allErrors);
-        if (result.errors.length > 0) {
+        if (result.documents.length === 0) {
+          // Total failure: don't show the green "Uploaded N files" card.
+          setFailed(true);
+          toast.error('Upload failed', {
+            description: allErrors[0]?.error ?? 'No files were uploaded',
+          });
+        } else if (result.errors.length > 0) {
           toast.warning(`Uploaded ${result.documents.length}/${valid.length} — some files were rejected`);
         } else {
           toast.success(
@@ -74,6 +82,7 @@ export function GlobalUploadManager({ enabled = true }: GlobalUploadManagerProps
           );
         }
       } catch (error) {
+        setFailed(true);
         setErrors((prev) => [
           ...prev,
           { fileName: 'Batch', error: error instanceof Error ? error.message : 'Upload failed' },
@@ -201,10 +210,16 @@ export function GlobalUploadManager({ enabled = true }: GlobalUploadManagerProps
               <span
                 className={cn(
                   'flex h-7 w-7 items-center justify-center rounded-lg',
-                  phase === 'done' ? 'bg-emerald-500/15' : 'bg-primary/10',
+                  phase === 'done' && failed
+                    ? 'bg-destructive/15'
+                    : phase === 'done'
+                      ? 'bg-emerald-500/15'
+                      : 'bg-primary/10',
                 )}
               >
-                {phase === 'done' ? (
+                {phase === 'done' && failed ? (
+                  <TriangleAlert className="h-4 w-4 text-destructive" />
+                ) : phase === 'done' ? (
                   <CheckCircle2 className="h-4 w-4 text-emerald-500" />
                 ) : (
                   <Loader2 className="h-4 w-4 animate-spin text-primary" />
@@ -212,9 +227,11 @@ export function GlobalUploadManager({ enabled = true }: GlobalUploadManagerProps
               </span>
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-semibold">
-                  {phase === 'done'
-                    ? `Uploaded ${batch.count} file${batch.count === 1 ? '' : 's'}`
-                    : `Uploading ${batch.count} file${batch.count === 1 ? '' : 's'}…`}
+                  {phase === 'done' && failed
+                    ? 'Upload failed'
+                    : phase === 'done'
+                      ? `Uploaded ${batch.count} file${batch.count === 1 ? '' : 's'}`
+                      : `Uploading ${batch.count} file${batch.count === 1 ? '' : 's'}…`}
                 </p>
                 <p className="text-[10px] text-muted-foreground">
                   {formatBytes(batch.bytes)} → {workspaceName}
@@ -233,9 +250,13 @@ export function GlobalUploadManager({ enabled = true }: GlobalUploadManagerProps
               )}
             </div>
             <div className="px-3.5 pb-3.5 pt-3">
-              <Progress value={phase === 'done' ? 100 : progress} className="h-1.5" />
+              <Progress value={phase === 'done' && !failed ? 100 : progress} className="h-1.5" />
               <p className="mt-1.5 font-mono text-[10px] text-muted-foreground">
-                {phase === 'done' ? '100% · handed to ingestion queue' : `${progress}%`}
+                {phase === 'done' && failed
+                  ? 'Failed — see the error below, nothing was queued'
+                  : phase === 'done'
+                    ? '100% · handed to ingestion queue'
+                    : `${progress}%`}
               </p>
             </div>
             {errors.length > 0 && (
