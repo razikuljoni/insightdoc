@@ -675,7 +675,7 @@ export function InsightDocApp() {
             >
               <Command className="h-3.5 w-3.5 shrink-0" />
               Commands
-              <kbd className="ml-auto rounded border bg-muted px-1 py-0.5 font-mono text-[9px]">⌘K</kbd>
+              <kbd className="-ml-7 rounded border bg-muted px-1 py-0.5 font-mono text-[9px]">⌘K</kbd>
             </button>
             <button
               onClick={() => useAppStore.getState().setShortcutsOpen(true)}
@@ -683,7 +683,7 @@ export function InsightDocApp() {
             >
               <Keyboard className="h-3.5 w-3.5 shrink-0" />
               Shortcuts
-              <kbd className="ml-auto rounded border bg-muted px-1 py-0.5 font-mono text-[9px]">?</kbd>
+              <kbd className="-ml-3 rounded border bg-muted px-1 py-0.5 font-mono text-[9px]">?</kbd>
             </button>
           </div>
           <div className="flex items-center justify-between rounded-lg bg-sidebar-accent/60 px-3 py-2">
