@@ -6,12 +6,11 @@
  * creates the Document row (PENDING), and enqueues an ingestion job.
  * Response shape mirrors the spec: { documentId, fileKey }.
  */
-import { NextResponse } from 'next/server';
+import { NextResponse, after } from 'next/server';
 import { createHash } from 'crypto';
 import { db } from '@/lib/db';
 import { getCurrentUser } from '@/server/bootstrap';
 import { recordAudit } from '@/server/audit';
-import { getQueue } from '@/server/queue';
 import { writeDocumentFile } from '@/server/storage';
 import { MAX_FILE_SIZE_BYTES, parseDocumentTags, type DocumentDTO } from '@/lib/types';
 
@@ -72,7 +71,6 @@ export async function POST(
 
     const created: DocumentDTO[] = [];
     const errors: Array<{ fileName: string; error: string }> = [];
-    const queue = await getQueue();
 
     for (const file of files) {
       let createdDocId: string | null = null;
@@ -124,10 +122,22 @@ export async function POST(
         const { key } = await writeDocumentFile(doc.id, bytes);
         await db.document.update({ where: { id: doc.id }, data: { fileUrl: key } });
 
-        queue.enqueue('document.process', {
-          documentId: doc.id,
-          workspaceId,
-          userId: user.id,
+        // Run ingestion in `after()`, not in a fire-and-forget in-process
+        // queue. On Vercel the function is frozen as soon as this route
+        // returns 201, so a background queue job is suspended mid-flight
+        // and the document stays PROCESSING forever (seen live: one doc
+        // stuck at 2%, another at 32%, no error, no progress for hours).
+        // `after()` keeps the function alive until the job finishes, in
+        // the SAME invocation — which also matters because the file lives
+        // in that invocation's /tmp. processDocumentJob already marks the
+        // doc FAILED with the real error if it throws.
+        after(async () => {
+          try {
+            const { processDocumentJob } = await import('@/server/worker/document-processor');
+            await processDocumentJob({ documentId: doc.id, workspaceId, userId: user.id });
+          } catch (error) {
+            console.error(`[after upload] document ${doc.id} failed:`, error);
+          }
         });
 
         created.push(toDto(doc));
